@@ -351,3 +351,57 @@ body {
     transform: translateY(-2px); /* Efek naik sedikit saat dihover */
     box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
 }
+/* --- PRINT MODE (Agar Rapi saat diprint/save PDF) --- */
+@media print {
+    /* Sembunyikan elemen yang tidak perlu dicetak */
+    .sidebar, #mobile-menu-btn, .btn-gold, .btn-refresh, header, .form-group, #sidebar-overlay {
+        display: none !important;
+    }
+
+    /* Atur Layout Kertas */
+    .app-layout, .content {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Tampilkan Kop Surat Khusus Print */
+    body::before {
+        content: "LAPORAN HASIL BELAJAR - RBM JAPAN";
+        display: block;
+        text-align: center;
+        font-weight: bold;
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #2F5D62;
+        border-bottom: 2px solid #D4AF37;
+        padding-bottom: 10px;
+    }
+
+    /* Tabel Hitam Putih agar hemat tinta */
+    .islamic-table th {
+        background-color: #eee !important;
+        color: black !important;
+        border: 1px solid #000;
+    }
+    .islamic-table td {
+        border: 1px solid #000;
+    }
+}
+/* --- SKELETON LOADING ANIMATION --- */
+.skeleton {
+    background: #eee;
+    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+    border-radius: 5px;
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+    color: transparent !important; /* Sembunyikan teks asli */
+    min-height: 20px;
+}
+
+@keyframes shine {
+    to { background-position-x: -200%; }
+}
