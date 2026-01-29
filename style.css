@@ -144,3 +144,33 @@ header h1 { font-family: 'Amiri', serif; color: var(--primary-green); border-bot
     color: var(--gold-accent);
     font-weight: bold;
 }
+/* Tambahkan di style.css */
+
+.header-with-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.input-gold {
+    padding: 8px 15px;
+    border: 1px solid var(--gold-accent);
+    border-radius: 6px;
+    color: var(--primary-green);
+    background-color: var(--cream-bg);
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+}
+
+.input-gold:focus {
+    box-shadow: 0 0 5px var(--gold-accent);
+}
+
+/* Biar tampilan tabel mapel lebih rapi */
+#table-rpp td:first-child {
+    font-weight: bold;
+    color: var(--primary-green);
+    width: 15%;
+}
