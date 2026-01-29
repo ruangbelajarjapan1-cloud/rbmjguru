@@ -147,23 +147,54 @@ function toggleSidebar() {
 // --- LOGIC LAINNYA (SAMA SEPERTI SEBELUMNYA) ---
 function handleLogin() {
     const select = document.getElementById('login-guru-select');
+    const inputPin = document.getElementById('login-pin').value; // Ambil PIN yang diketik
     const selectedName = select.value;
+
     if (!selectedName) {
-        alert(translations[currentLang].alert_select_guru); // Alert ikut bahasa
+        Swal.fire({ icon: 'error', title: 'Oops...', text: translations[currentLang].alert_select_guru, confirmButtonColor: '#D4AF37' });
         return;
     }
+
+    // Cari data guru
     const teacherData = rawDataGuru.find(g => g.Nama_Guru === selectedName);
+
+    // --- LOGIKA CEK PIN (BARU) ---
+    // Pastikan PIN di Sheet (teacherData.PIN) diubah ke string dulu biar aman
+    const correctPin = teacherData.PIN ? teacherData.PIN.toString() : "";
+
+    if (inputPin !== correctPin) {
+        // Jika PIN Salah
+        Swal.fire({ 
+            icon: 'error', 
+            title: 'Akses Ditolak', 
+            text: 'PIN yang Anda masukkan salah!',
+            confirmButtonColor: '#D4AF37'
+        });
+        return; 
+    }
+    // -----------------------------
+
+    // Jika Benar, Lanjut Login...
     currentTeacher = selectedName;
     if (teacherData && teacherData.Mapel_Ajar) {
         currentTeacherMapel = teacherData.Mapel_Ajar.toString().split(',').map(item => item.trim());
     } else { currentTeacherMapel = []; }
 
     updateUserProfile(currentTeacher);
+    
+    // Animasi Sukses Login
+    Swal.fire({
+        icon: 'success',
+        title: 'Ahlan wa Sahlan',
+        text: `Selamat datang, ${selectedName}`,
+        timer: 1500,
+        showConfirmButton: false
+    });
+
     document.getElementById('login-section').classList.add('hidden');
     document.getElementById('app-container').classList.remove('hidden');
     showPage('dashboard');
 }
-
 function updateUserProfile(name) {
     document.getElementById('header-nama-guru').innerText = name;
     const initials = name.match(/\b\w/g) || [];
@@ -174,7 +205,20 @@ function updateUserProfile(name) {
 }
 
 function handleLogout() {
-    if(confirm(translations[currentLang].confirm_logout)) location.reload();
+    Swal.fire({
+        title: translations[currentLang].confirm_logout,
+        text: "Anda harus memasukkan PIN lagi nanti.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#D4AF37',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            location.reload();
+        }
+    })
 }
 
 function showPage(pageId) {
@@ -317,15 +361,25 @@ document.getElementById('form-nilai').addEventListener('submit', function(e) {
     };
 
     fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
-    .then(() => {
-        alert(translations[currentLang].alert_save_success);
-        document.getElementById('form-nilai').reset();
-        document.getElementById('input-guru-hidden').value = currentTeacher;
-        // Kembalikan placeholder nama siswa
-        changeLanguage(currentLang); 
-        btn.innerText = originalText;
-        btn.disabled = false;
-    })
+   // GANTI BAGIAN INI DI script.js (Bagian Fetch Success)
+
+.then(() => {
+    // Ganti alert biasa dengan ini:
+    Swal.fire({
+        title: 'Alhamdulillah!',
+        text: translations[currentLang].alert_save_success,
+        icon: 'success',
+        confirmButtonText: 'Lanjut',
+        confirmButtonColor: '#D4AF37', // Warna Emas kita!
+        background: '#FDFBF7' // Warna Krem background kita
+    });
+
+    document.getElementById('form-nilai').reset();
+    document.getElementById('input-guru-hidden').value = currentTeacher;
+    changeLanguage(currentLang); 
+    btn.innerText = originalText;
+    btn.disabled = false;
+})
     .catch(err => {
         alert("Error saving data.");
         btn.innerText = originalText;
