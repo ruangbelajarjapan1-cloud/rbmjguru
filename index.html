@@ -55,12 +55,19 @@
             </div>
         </section>
 
-        <section id="rpp" class="page-section hidden">
+       <section id="rpp" class="page-section hidden">
             <div class="card">
-                <h3>Rencana Pelaksanaan Pembelajaran</h3>
+                <div class="header-with-filter">
+                    <h3>Rencana Pelaksanaan Pembelajaran</h3>
+                    <select id="filter-rpp" onchange="filterData('rpp')" class="input-gold">
+                        <option value="all">Semua Mapel</option>
+                        </select>
+                </div>
+                
                 <table class="islamic-table" id="table-rpp">
                     <thead>
                         <tr>
+                            <th>Mapel</th>
                             <th>Pertemuan</th>
                             <th>Materi</th>
                             <th>Tujuan</th>
@@ -74,12 +81,17 @@
 
         <section id="silabus" class="page-section hidden">
             <div class="card">
-                <h3>Silabus Semester Ini</h3>
+                <div class="header-with-filter">
+                    <h3>Silabus Semester Ini</h3>
+                    <select id="filter-silabus" onchange="filterData('silabus')" class="input-gold">
+                        <option value="all">Semua Mapel</option>
+                    </select>
+                </div>
+                
                 <div id="silabus-container" class="grid-container">
                     </div>
             </div>
         </section>
-
         <section id="penilaian" class="page-section hidden">
             <div class="card form-card">
                 <h3>Input Penilaian Siswa</h3>
