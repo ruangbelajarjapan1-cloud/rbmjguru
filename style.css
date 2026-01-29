@@ -314,3 +314,40 @@ input, select, textarea { font-size: 16px !important; } /* Mencegah zoom otomati
     /* Tabel Font Kecil di HP */
     .islamic-table th, .islamic-table td { font-size: 0.85rem; padding: 8px; }
 }
+/* --- UPGRADE UI: GLASSMORPHISM (FIGMA STYLE) --- */
+
+/* 1. Background Gradient Halus */
+body {
+    background: linear-gradient(135deg, #FDFBF7 0%, #E6EFE9 100%);
+    background-attachment: fixed; /* Agar background tetap saat discroll */
+}
+
+/* 2. Efek Kaca pada Card */
+.card, .login-card {
+    background: rgba(255, 255, 255, 0.85) !important; /* Putih Transparan */
+    backdrop-filter: blur(10px); /* Efek Blur di belakangnya */
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.6); /* Garis tepi tipis */
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); /* Bayangan lembut */
+}
+
+/* 3. Sidebar Kaca (Hanya di Laptop) */
+@media screen and (min-width: 769px) {
+    .sidebar {
+        background: rgba(47, 93, 98, 0.95); /* Hijau Transparan */
+        backdrop-filter: blur(15px);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* 4. Tombol dengan Gradasi Emas */
+.btn-gold {
+    background: linear-gradient(45deg, #D4AF37, #F2D06B);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    border: none;
+    transition: transform 0.2s;
+}
+.btn-gold:hover {
+    transform: translateY(-2px); /* Efek naik sedikit saat dihover */
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+}
