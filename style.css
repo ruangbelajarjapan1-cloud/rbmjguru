@@ -174,3 +174,84 @@ header h1 { font-family: 'Amiri', serif; color: var(--primary-green); border-bot
     color: var(--primary-green);
     width: 15%;
 }
+/* --- CSS LAMA TETAP DIPAKAI (Root variables, dll) --- */
+:root {
+    --primary-green: #2F5D62;
+    --soft-green: #A7C4BC;
+    --cream-bg: #FDFBF7;
+    --gold-accent: #D4AF37;
+    --gold-hover: #B5952F;
+    --text-dark: #333333;
+    --white: #FFFFFF;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+body { background-color: var(--cream-bg); color: var(--text-dark); height: 100vh; overflow: hidden; }
+
+/* LAYOUT UTAMA */
+.app-layout { display: flex; height: 100vh; width: 100%; }
+.hidden { display: none !important; }
+
+/* --- LOGIN SCREEN (BARU) --- */
+.login-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--primary-green);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.login-card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border-top: 5px solid var(--gold-accent);
+}
+
+.login-logo { width: 80px; margin-bottom: 15px; }
+.logo-area-login h2 { font-family: 'Amiri', serif; color: var(--primary-green); margin-bottom: 5px; }
+.logo-area-login p { font-size: 0.9rem; color: #666; margin-bottom: 25px; }
+
+/* --- SIDEBAR & CONTENT (CSS Lama disesuaikan) --- */
+.sidebar { width: 250px; background: var(--primary-green); color: var(--white); display: flex; flex-direction: column; padding: 20px; }
+.logo-area { text-align: center; margin-bottom: 30px; }
+.logo-img { max-width: 80%; height: auto; border-radius: 8px; margin-bottom: 10px; }
+.menu li { list-style: none; padding: 12px 15px; margin-bottom: 5px; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+.menu li:hover, .menu li.active { background: rgba(212, 175, 55, 0.2); border-left: 4px solid var(--gold-accent); }
+
+.content { flex: 1; padding: 30px; overflow-y: auto; background: var(--cream-bg); }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+header h1 { font-family: 'Amiri', serif; color: var(--primary-green); border-bottom: 2px solid var(--gold-accent); }
+
+.user-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--primary-green); }
+.avatar { width: 40px; height: 40px; background: var(--gold-accent); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+/* COMPONENTS */
+.card { background: var(--white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 3px solid var(--gold-accent); }
+.header-with-filter { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+/* INPUTS & TABLES */
+.input-gold, select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-top: 5px; }
+.input-gold:focus, select:focus, input:focus { outline: none; border-color: var(--gold-accent); box-shadow: 0 0 5px rgba(212, 175, 55, 0.3); }
+
+.btn-gold { background: var(--gold-accent); color: var(--white); border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s; }
+.btn-gold:hover { background: var(--gold-hover); }
+
+.btn-logout { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.3); padding: 8px; width: 100%; margin-top: auto; cursor: pointer; border-radius: 5px; }
+.btn-logout:hover { background: rgba(255,255,255,0.1); color: white; }
+
+.islamic-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.islamic-table th { background: var(--primary-green); color: var(--white); padding: 12px; text-align: left; }
+.islamic-table td { padding: 12px; border-bottom: 1px solid #eee; }
+.islamic-table tr:hover { background: #f9f9f9; }
+
+/* UTILS */
+.form-group { margin-bottom: 15px; text-align: left; }
+.info-box { background: #fffbe6; padding: 10px; border-radius: 5px; border: 1px solid var(--gold-accent); color: #8a6d3b; }
+.loader { text-align: center; color: var(--gold-accent); font-weight: bold; margin: 20px 0; }
