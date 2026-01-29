@@ -6,54 +6,41 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxetySGgJvC_cEA2ybFqy1H
 
 // Navigasi Halaman
 function showPage(pageId) {
-    // Sembunyikan semua section
-    document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('hidden'));
-    // Hapus aktif di menu
-    document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+    // ... kode sembunyikan section (biarkan yang lama) ...
+    // ... kode hapus active menu (biarkan yang lama) ...
     
-    // Tampilkan yang dipilih
     document.getElementById(pageId).classList.remove('hidden');
-    
-    // Update Judul
     document.getElementById('page-title').innerText = pageId.toUpperCase();
     
     // Logic khusus per halaman
     if(pageId === 'rpp') fetchData('getRPP');
     if(pageId === 'silabus') fetchData('getSilabus');
     if(pageId === 'rapor') loadRapor();
+    
+    // TAMBAHAN BARU:
+    if(pageId === 'penilaian') fetchData('getGuru'); 
 }
-
 // Variabel Global untuk menyimpan data mentah
 let rawDataRPP = [];
 let rawDataSilabus = [];
 
-// Fungsi Fetch Data
 async function fetchData(action) {
-    const loader = document.getElementById('loader');
-    loader.classList.remove('hidden');
+    // ... kode loader (biarkan) ...
     
     try {
         const response = await fetch(`${API_URL}?action=${action}`);
         const data = await response.json();
         
-        loader.classList.add('hidden');
+        // ... kode hide loader (biarkan) ...
         
-        if (action === 'getRPP') {
-            rawDataRPP = data; // Simpan ke memori
-            setupFilter('filter-rpp', data, 'Mata_Pelajaran'); // Siapkan filter
-            renderRPP(data); // Tampilkan semua dulu
-        }
-        if (action === 'getSilabus') {
-            rawDataSilabus = data;
-            setupFilter('filter-silabus', data, 'Mata_Pelajaran');
-            renderSilabus(data);
-        }
+        if (action === 'getRPP') { ... } // biarkan
+        if (action === 'getSilabus') { ... } // biarkan
         if (action === 'getNilai') renderRapor(data);
         
-    } catch (error) {
-        loader.innerText = "Gagal mengambil data.";
-        console.error(error);
-    }
+        // TAMBAHAN BARU:
+        if (action === 'getGuru') renderGuruOptions(data); 
+
+    } catch (error) { ... }
 }
 
 // Fungsi Mengisi Dropdown Filter Secara Otomatis
@@ -189,3 +176,17 @@ document.getElementById('form-nilai').addEventListener('submit', function(e) {
 
 // Load awal
 showPage('dashboard');
+function renderGuruOptions(data) {
+    const select = document.getElementById('input-guru');
+    
+    // Reset isi dropdown
+    select.innerHTML = '<option value="">-- Pilih Pengajar --</option>';
+    
+    // Masukkan nama guru dari Sheet
+    data.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.Nama_Guru;
+        option.innerText = item.Nama_Guru;
+        select.appendChild(option);
+    });
+}
