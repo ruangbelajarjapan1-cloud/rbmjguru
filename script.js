@@ -23,7 +23,11 @@ function showPage(pageId) {
     if(pageId === 'rapor') loadRapor();
 }
 
-// Fungsi Fetch Data dari Google Sheets
+// Variabel Global untuk menyimpan data mentah
+let rawDataRPP = [];
+let rawDataSilabus = [];
+
+// Fungsi Fetch Data
 async function fetchData(action) {
     const loader = document.getElementById('loader');
     loader.classList.remove('hidden');
@@ -34,22 +38,77 @@ async function fetchData(action) {
         
         loader.classList.add('hidden');
         
-        if (action === 'getRPP') renderRPP(data);
-        if (action === 'getSilabus') renderSilabus(data);
+        if (action === 'getRPP') {
+            rawDataRPP = data; // Simpan ke memori
+            setupFilter('filter-rpp', data, 'Mata_Pelajaran'); // Siapkan filter
+            renderRPP(data); // Tampilkan semua dulu
+        }
+        if (action === 'getSilabus') {
+            rawDataSilabus = data;
+            setupFilter('filter-silabus', data, 'Mata_Pelajaran');
+            renderSilabus(data);
+        }
         if (action === 'getNilai') renderRapor(data);
         
     } catch (error) {
-        loader.innerText = "Gagal mengambil data. Cek koneksi.";
+        loader.innerText = "Gagal mengambil data.";
         console.error(error);
     }
 }
 
-// Render Tabel RPP
+// Fungsi Mengisi Dropdown Filter Secara Otomatis
+function setupFilter(elementId, data, key) {
+    const select = document.getElementById(elementId);
+    // Ambil daftar mapel unik (tidak duplikat)
+    const uniqueMapel = [...new Set(data.map(item => item[key]))];
+    
+    // Reset isi dropdown, sisakan 'Semua Mapel'
+    select.innerHTML = '<option value="all">Semua Mapel</option>';
+    
+    // Masukkan mapel yang ditemukan
+    uniqueMapel.forEach(mapel => {
+        if(mapel) { // Cek biar tidak ada mapel kosong
+            const option = document.createElement('option');
+            option.value = mapel;
+            option.innerText = mapel;
+            select.appendChild(option);
+        }
+    });
+}
+
+// Fungsi Filter saat Dropdown Dipilih
+function filterData(type) {
+    if (type === 'rpp') {
+        const selected = document.getElementById('filter-rpp').value;
+        // Jika pilih 'all', pakai semua data. Jika tidak, filter berdasarkan mapel.
+        const filtered = selected === 'all' 
+            ? rawDataRPP 
+            : rawDataRPP.filter(item => item.Mata_Pelajaran === selected);
+        renderRPP(filtered);
+    }
+    
+    if (type === 'silabus') {
+        const selected = document.getElementById('filter-silabus').value;
+        const filtered = selected === 'all' 
+            ? rawDataSilabus 
+            : rawDataSilabus.filter(item => item.Mata_Pelajaran === selected);
+        renderSilabus(filtered);
+    }
+}
+
+// Render RPP (Update kolom Mapel)
 function renderRPP(data) {
     const tbody = document.querySelector('#table-rpp tbody');
     tbody.innerHTML = '';
+    
+    if(data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Data tidak ditemukan</td></tr>';
+        return;
+    }
+
     data.forEach(item => {
         const row = `<tr>
+            <td>${item.Mata_Pelajaran}</td>
             <td>${item.Pertemuan_Ke}</td>
             <td>${item.Materi}</td>
             <td>${item.Tujuan}</td>
@@ -59,19 +118,28 @@ function renderRPP(data) {
     });
 }
 
-// Render Silabus (Card View)
+// Render Silabus (Update Tampilan Card)
 function renderSilabus(data) {
     const container = document.getElementById('silabus-container');
     container.innerHTML = '';
+    
+    if(data.length === 0) {
+        container.innerHTML = '<p style="text-align:center;">Data tidak ditemukan</p>';
+        return;
+    }
+
     data.forEach(item => {
-        const card = `<div style="padding:15px; border-left:4px solid var(--gold-accent); background:#f9f9f9; margin-bottom:10px;">
-            <h4>Pekan ${item.Pekan}: ${item.Tema}</h4>
-            <p>Target: ${item.Target_Hafalan}</p>
+        const card = `<div style="padding:15px; border-left:4px solid var(--gold-accent); background:#fff; margin-bottom:15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 0 8px 8px 0;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <small style="color:var(--primary-green); font-weight:bold; text-transform:uppercase;">${item.Mata_Pelajaran}</small>
+                <small style="color:#888;">Pekan ke-${item.Pekan}</small>
+            </div>
+            <h4 style="margin:5px 0;">${item.Tema}</h4>
+            <p style="font-size:0.9rem; color:#555;">🎯 Target: ${item.Target_Hafalan}</p>
         </div>`;
         container.innerHTML += card;
     });
 }
-
 // Render Rapor
 function loadRapor() {
     fetchData('getNilai');
