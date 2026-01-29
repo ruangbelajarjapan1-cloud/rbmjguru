@@ -1,207 +1,147 @@
-/* LOGIC FRONTEND RBM JAPAN 
-   Updated for Wahyu - Full Version
-*/
+/* LOGIC FULL SYSTEM RBM JAPAN - VERSI SMART MAPEL */
 
-// URL API DARI APPS SCRIPT ANDA
 const API_URL = 'https://script.google.com/macros/s/AKfycbxetySGgJvC_cEA2ybFqy1HeZ_ut_Pj2SZLekpFiOihxzMCuFJBOvU1N54WiDEkD4bb/exec';
 
-// Variabel Global untuk menyimpan data mentah (untuk fitur filter)
+// -- STATE VARIABLES --
+let currentTeacher = null;      // Nama Guru yang login
+let currentTeacherMapel = [];   // Array Mapel milik guru tersebut
+let rawDataGuru = [];           // Menyimpan data mentah guru dari Sheet
 let rawDataRPP = [];
 let rawDataSilabus = [];
 
-// --- 1. NAVIGASI HALAMAN ---
-function showPage(pageId) {
-    // Sembunyikan semua section
-    document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('hidden'));
+// --- 1. INISIALISASI ---
+document.addEventListener('DOMContentLoaded', () => {
+    fetchData('getGuru', true); // Ambil data guru saat web dibuka
+});
+
+// --- 2. LOGIC LOGIN (DIPERBARUI) ---
+function handleLogin() {
+    const select = document.getElementById('login-guru-select');
+    const selectedName = select.value;
+
+    if (!selectedName) {
+        alert("Mohon pilih nama pengajar terlebih dahulu.");
+        return;
+    }
+
+    // 1. Cari Data Guru yang dipilih dari rawDataGuru
+    const teacherData = rawDataGuru.find(g => g.Nama_Guru === selectedName);
     
-    // Hapus class 'active' dari semua menu sidebar
+    // 2. Simpan Nama
+    currentTeacher = selectedName;
+    
+    // 3. Simpan & Proses Mapel Ajar (Pisahkan koma jadi Array)
+    // Contoh: "Tajwid, Fiqih" menjadi ['Tajwid', 'Fiqih']
+    if (teacherData && teacherData.Mapel_Ajar) {
+        currentTeacherMapel = teacherData.Mapel_Ajar.toString().split(',').map(item => item.trim());
+    } else {
+        currentTeacherMapel = []; // Jaga-jaga jika kosong
+    }
+
+    // 4. Update UI Header
+    updateUserProfile(currentTeacher);
+
+    // 5. Pindah Halaman
+    document.getElementById('login-section').classList.add('hidden');
+    document.getElementById('app-container').classList.remove('hidden');
+    showPage('dashboard');
+}
+
+function updateUserProfile(name) {
+    document.getElementById('header-nama-guru').innerText = name;
+    const initials = name.match(/\b\w/g) || [];
+    document.getElementById('header-avatar').innerText = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+    document.getElementById('welcome-nama-guru').innerText = name;
+    
+    // Auto-fill hidden input di form
+    document.getElementById('input-guru-hidden').value = name;
+    document.getElementById('display-guru-form').innerText = name;
+}
+
+function handleLogout() {
+    if(confirm("Apakah Anda yakin ingin keluar?")) {
+        location.reload();
+    }
+}
+
+// --- 3. NAVIGASI HALAMAN ---
+function showPage(pageId) {
+    document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('hidden'));
     document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
     
-    // Tampilkan halaman yang dipilih
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) {
-        targetPage.classList.remove('hidden');
-    }
-    
-    // Update Judul Halaman
+    const target = document.getElementById(pageId);
+    if (target) target.classList.remove('hidden');
+
     document.getElementById('page-title').innerText = pageId.toUpperCase();
-    
-    // Highlight menu yang aktif (opsional, perlu penyesuaian ID di HTML jika mau presisi)
-    // Untuk saat ini kita lewati highlight menu otomatis biar simpel
-    
-    // Logika khusus: Ambil data sesuai halaman yang dibuka
+
+    // Logic per halaman
     if(pageId === 'rpp') fetchData('getRPP');
     if(pageId === 'silabus') fetchData('getSilabus');
     if(pageId === 'rapor') loadRapor();
     
-    // Jika halaman Penilaian dibuka, ambil data Guru
-    if(pageId === 'penilaian') fetchData('getGuru'); 
+    // KHUSUS HALAMAN PENILAIAN: Update Dropdown Mapel
+    if(pageId === 'penilaian') {
+        updateMapelDropdown();
+    }
 }
 
-// --- 2. FUNGSI FETCH DATA (AMBIL DATA) ---
-async function fetchData(action) {
+// --- FUNGSI BARU: UPDATE DROPDOWN MAPEL ---
+function updateMapelDropdown() {
+    const selectMapel = document.getElementById('input-mapel');
+    selectMapel.innerHTML = ''; // Kosongkan dulu
+
+    if (currentTeacherMapel.length === 0) {
+        selectMapel.innerHTML = '<option value="">Belum ada mapel diatur di Sheet</option>';
+        return;
+    }
+
+    // Masukkan Mapel milik guru tersebut saja
+    currentTeacherMapel.forEach(mapel => {
+        const option = document.createElement('option');
+        option.value = mapel;
+        option.innerText = mapel;
+        selectMapel.appendChild(option);
+    });
+}
+
+
+// --- 4. FETCH DATA ---
+async function fetchData(action, isInitialLoad = false) {
     const loader = document.getElementById('loader');
-    if(loader) loader.classList.remove('hidden');
-    
+    if(!isInitialLoad) loader.classList.remove('hidden');
+
     try {
         const response = await fetch(`${API_URL}?action=${action}`);
         const data = await response.json();
         
-        if(loader) loader.classList.add('hidden');
-        
-        // Routing Data ke Fungsi Render yang sesuai
-        if (action === 'getRPP') {
-            rawDataRPP = data; // Simpan ke global var
-            setupFilter('filter-rpp', data, 'Mata_Pelajaran'); // Siapkan filter
-            renderRPP(data); // Tampilkan tabel
+        if(!isInitialLoad) loader.classList.add('hidden');
+
+        if (action === 'getGuru') {
+            rawDataGuru = data; // Simpan data mentah ke variabel global
+            populateLoginDropdown(data);
         }
-        
+        if (action === 'getRPP') {
+            rawDataRPP = data;
+            setupFilter('filter-rpp', data, 'Mata_Pelajaran');
+            renderRPP(data);
+        }
         if (action === 'getSilabus') {
             rawDataSilabus = data;
             setupFilter('filter-silabus', data, 'Mata_Pelajaran');
             renderSilabus(data);
         }
-        
-        if (action === 'getNilai') {
-            renderRapor(data);
-        }
-        
-        if (action === 'getGuru') {
-            renderGuruOptions(data);
-        }
-        
+        if (action === 'getNilai') renderRapor(data);
+
     } catch (error) {
-        if(loader) loader.innerText = "Gagal mengambil data. Cek koneksi.";
-        console.error("Error fetching data:", error);
+        console.error("Error:", error);
+        if(isInitialLoad) document.getElementById('login-guru-select').innerHTML = '<option>Gagal memuat data.</option>';
     }
 }
 
-// --- 3. LOGIKA FILTER (DROPDOWN MAPEL) ---
-function setupFilter(elementId, data, key) {
-    const select = document.getElementById(elementId);
-    if (!select) return; // Cegah error jika elemen tidak ada
-    
-    // Ambil daftar mapel unik
-    const uniqueMapel = [...new Set(data.map(item => item[key]))];
-    
-    // Reset isi dropdown
-    select.innerHTML = '<option value="all">Semua Mapel</option>';
-    
-    // Masukkan pilihan ke dropdown
-    uniqueMapel.forEach(mapel => {
-        if(mapel) {
-            const option = document.createElement('option');
-            option.value = mapel;
-            option.innerText = mapel;
-            select.appendChild(option);
-        }
-    });
-}
-
-function filterData(type) {
-    if (type === 'rpp') {
-        const select = document.getElementById('filter-rpp');
-        const selected = select ? select.value : 'all';
-        
-        const filtered = selected === 'all' 
-            ? rawDataRPP 
-            : rawDataRPP.filter(item => item.Mata_Pelajaran === selected);
-        renderRPP(filtered);
-    }
-    
-    if (type === 'silabus') {
-        const select = document.getElementById('filter-silabus');
-        const selected = select ? select.value : 'all';
-        
-        const filtered = selected === 'all' 
-            ? rawDataSilabus 
-            : rawDataSilabus.filter(item => item.Mata_Pelajaran === selected);
-        renderSilabus(filtered);
-    }
-}
-
-// --- 4. RENDER DATA KE HTML ---
-
-// Tampilkan Tabel RPP
-function renderRPP(data) {
-    const tbody = document.querySelector('#table-rpp tbody');
-    if(!tbody) return;
-    
-    tbody.innerHTML = '';
-    
-    if(data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Data tidak ditemukan</td></tr>';
-        return;
-    }
-
-    data.forEach(item => {
-        const row = `<tr>
-            <td>${item.Mata_Pelajaran || '-'}</td>
-            <td>${item.Pertemuan_Ke || '-'}</td>
-            <td>${item.Materi || '-'}</td>
-            <td>${item.Tujuan || '-'}</td>
-            <td>${item.Kegiatan || '-'}</td>
-        </tr>`;
-        tbody.innerHTML += row;
-    });
-}
-
-// Tampilkan Kartu Silabus
-function renderSilabus(data) {
-    const container = document.getElementById('silabus-container');
-    if(!container) return;
-    
-    container.innerHTML = '';
-    
-    if(data.length === 0) {
-        container.innerHTML = '<p style="text-align:center;">Data tidak ditemukan</p>';
-        return;
-    }
-
-    data.forEach(item => {
-        const card = `<div style="padding:15px; border-left:4px solid var(--gold-accent); background:#fff; margin-bottom:15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 0 8px 8px 0;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <small style="color:var(--primary-green); font-weight:bold; text-transform:uppercase;">${item.Mata_Pelajaran || 'Umum'}</small>
-                <small style="color:#888;">Pekan ke-${item.Pekan || '-'}</small>
-            </div>
-            <h4 style="margin:5px 0;">${item.Tema || 'Tanpa Tema'}</h4>
-            <p style="font-size:0.9rem; color:#555;">🎯 Target: ${item.Target_Hafalan || '-'}</p>
-        </div>`;
-        container.innerHTML += card;
-    });
-}
-
-// Load Rapor Wrapper
-function loadRapor() {
-    fetchData('getNilai');
-}
-
-// Tampilkan Tabel Rapor
-function renderRapor(data) {
-    const tbody = document.querySelector('#table-rapor tbody');
-    if(!tbody) return;
-    
-    tbody.innerHTML = '';
-    data.forEach(item => {
-        const row = `<tr>
-            <td>${item.Nama_Siswa || '-'}</td>
-            <td>${item.Mata_Pelajaran || '-'}</td>
-            <td>${item.Nilai || '0'}</td>
-            <td>${item.Keterangan || '-'}</td>
-        </tr>`;
-        tbody.innerHTML += row;
-    });
-}
-
-// Tampilkan Pilihan Guru di Dropdown
-function renderGuruOptions(data) {
-    const select = document.getElementById('input-guru');
-    if(!select) return;
-    
-    // Reset isi dropdown
-    select.innerHTML = '<option value="">-- Pilih Pengajar --</option>';
-    
-    // Masukkan nama guru dari Sheet
+// --- 5. RENDER FUNCTIONS ---
+function populateLoginDropdown(data) {
+    const select = document.getElementById('login-guru-select');
+    select.innerHTML = '<option value="">-- Pilih Nama Anda --</option>';
     data.forEach(item => {
         if(item.Nama_Guru) {
             const option = document.createElement('option');
@@ -212,46 +152,81 @@ function renderGuruOptions(data) {
     });
 }
 
-// --- 5. HANDLE SUBMIT FORM (INPUT NILAI) ---
-const formNilai = document.getElementById('form-nilai');
-if (formNilai) {
-    formNilai.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const btn = document.querySelector('.btn-gold');
-        const originalText = btn.innerText;
-        btn.innerText = "Menyimpan...";
-        btn.disabled = true;
-        
-        // Ambil data dari form (termasuk Guru)
-        const data = {
-            nama: document.getElementById('input-nama').value,
-            mapel: document.getElementById('input-mapel').value,
-            nilai: document.getElementById('input-nilai').value,
-            ket: document.getElementById('input-ket').value,
-            guru: document.getElementById('input-guru').value // Ambil value guru
-        };
-
-        // Kirim ke Backend
-        fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors', 
-            body: JSON.stringify(data)
-        }).then(() => {
-            alert("Alhamdulillah, Nilai berhasil disimpan!");
-            document.getElementById('form-nilai').reset();
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }).catch(err => {
-            alert("Gagal menyimpan data.");
-            console.error(err);
-            btn.innerText = originalText;
-            btn.disabled = false;
-        });
+function setupFilter(id, data, key) {
+    const select = document.getElementById(id);
+    const unique = [...new Set(data.map(i => i[key]))];
+    select.innerHTML = '<option value="all">Semua Mapel</option>';
+    unique.forEach(val => {
+        if(val) select.innerHTML += `<option value="${val}">${val}</option>`;
     });
 }
 
-// --- 6. INITIALIZATION (JALAN SAAT PERTAMA BUKA) ---
-// Buka dashboard saat pertama kali load
-document.addEventListener('DOMContentLoaded', () => {
-    showPage('dashboard');
+function filterData(type) {
+    const select = document.getElementById(`filter-${type}`);
+    const val = select.value;
+    if (type === 'rpp') {
+        const filtered = val === 'all' ? rawDataRPP : rawDataRPP.filter(i => i.Mata_Pelajaran === val);
+        renderRPP(filtered);
+    } else if (type === 'silabus') {
+        const filtered = val === 'all' ? rawDataSilabus : rawDataSilabus.filter(i => i.Mata_Pelajaran === val);
+        renderSilabus(filtered);
+    }
+}
+
+function renderRPP(data) {
+    const tbody = document.querySelector('#table-rpp tbody');
+    tbody.innerHTML = '';
+    if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="5">Data kosong</td></tr>'; return; }
+    data.forEach(item => {
+        tbody.innerHTML += `<tr><td style="font-weight:bold; color:#2F5D62">${item.Mata_Pelajaran||'-'}</td><td>${item.Pertemuan_Ke||'-'}</td><td>${item.Materi||'-'}</td><td>${item.Tujuan||'-'}</td><td>${item.Kegiatan||'-'}</td></tr>`;
+    });
+}
+
+function renderSilabus(data) {
+    const container = document.getElementById('silabus-container');
+    container.innerHTML = '';
+    if(data.length === 0) { container.innerHTML = '<p>Data kosong</p>'; return; }
+    data.forEach(item => {
+        container.innerHTML += `<div style="padding:15px; border-left:4px solid #D4AF37; background:#fff; margin-bottom:10px; box-shadow:0 2px 5px rgba(0,0,0,0.05);"><div style="display:flex; justify-content:space-between;"><b style="color:#2F5D62">${item.Mata_Pelajaran}</b><span style="color:#888; font-size:0.8rem">Pekan ${item.Pekan}</span></div><h4 style="margin:5px 0;">${item.Tema}</h4><p style="color:#555; font-size:0.9rem">🎯 ${item.Target_Hafalan}</p></div>`;
+    });
+}
+
+function loadRapor() { fetchData('getNilai'); }
+function renderRapor(data) {
+    const tbody = document.querySelector('#table-rapor tbody');
+    tbody.innerHTML = '';
+    data.slice().reverse().forEach(item => {
+        tbody.innerHTML += `<tr><td>${item.Nama_Siswa}</td><td>${item.Mata_Pelajaran}</td><td>${item.Nilai}</td><td>${item.Keterangan}</td><td style="font-size:0.8rem; color:#666">${item.Pengajar || '-'}</td></tr>`;
+    });
+}
+
+// --- 6. SUBMIT FORM ---
+document.getElementById('form-nilai').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = document.querySelector('.btn-gold');
+    const originalText = btn.innerText;
+    btn.innerText = "Menyimpan...";
+    btn.disabled = true;
+
+    const data = {
+        nama: document.getElementById('input-nama').value,
+        mapel: document.getElementById('input-mapel').value,
+        nilai: document.getElementById('input-nilai').value,
+        ket: document.getElementById('input-ket').value,
+        guru: document.getElementById('input-guru-hidden').value
+    };
+
+    fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
+    .then(() => {
+        alert(`Alhamdulillah, Nilai ${data.mapel} berhasil disimpan!`);
+        document.getElementById('form-nilai').reset();
+        document.getElementById('input-guru-hidden').value = currentTeacher; // Restore nama guru
+        btn.innerText = originalText;
+        btn.disabled = false;
+    })
+    .catch(err => {
+        alert("Gagal menyimpan.");
+        btn.innerText = originalText;
+        btn.disabled = false;
+    });
 });
