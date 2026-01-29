@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RBM Japan System</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="style.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2F5D62"> ```
+
+---
+
+### Ringkasan Upgrade "Expert Quality":
+1.  **Keamanan:** Sekarang Ustadz Budi tidak bisa iseng buka akun Ustadzah Yuni karena ada PIN.
+2.  **Visual:** Notifikasi kini menggunakan animasi halus dan warna yang *matching* dengan tema (Emas/Hijau), bukan abu-abu standar browser.
+3.  **Feeling:** Saat login ada efek "Loading" dan "Success" yang memanjakan mata.
+
+Silakan dicoba, Wahyu. Dengan tambahan PIN dan SweetAlert ini, aplikasi RBM Japan sudah layak disebut **Sistem Informasi Akademik Profesional**.
 </head>
 <body>
 
@@ -25,11 +38,16 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <select id="login-guru-select" class="input-gold">
-                    <option value="" data-lang="loading">Memuat...</option>
-                </select>
-            </div>
+           <div class="form-group">
+    <select id="login-guru-select" class="input-gold">
+        <option value="" data-lang="loading">Memuat...</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <input type="password" id="login-pin" class="input-gold" placeholder="Masukkan PIN Rahasia" maxlength="6" style="text-align:center; letter-spacing: 5px; font-size: 1.2rem;">
+</div>
+<button onclick="handleLogin()" class="btn-gold" style="width:100%" data-lang="btn_enter">Masuk Aplikasi</button>
 
             <button onclick="handleLogin()" class="btn-gold" style="width:100%" data-lang="btn_enter">Masuk Aplikasi</button>
         </div>
