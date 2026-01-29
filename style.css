@@ -255,3 +255,62 @@ header h1 { font-family: 'Amiri', serif; color: var(--primary-green); border-bot
 .form-group { margin-bottom: 15px; text-align: left; }
 .info-box { background: #fffbe6; padding: 10px; border-radius: 5px; border: 1px solid var(--gold-accent); color: #8a6d3b; }
 .loader { text-align: center; color: var(--gold-accent); font-weight: bold; margin: 20px 0; }
+/* --- MOBILE RESPONSIVE & UTILITIES --- */
+
+/* 1. Reset Zoom di HP */
+input, select, textarea { font-size: 16px !important; } /* Mencegah zoom otomatis di iPhone */
+
+/* 2. Tombol Hamburger (Awalnya Sembunyi di Laptop) */
+#mobile-menu-btn {
+    display: none; 
+    position: fixed; top: 15px; left: 15px; z-index: 1001;
+    background: var(--gold-accent); color: white; border: none;
+    padding: 10px 15px; border-radius: 5px; font-size: 1.2rem; cursor: pointer;
+}
+
+/* 3. Dropdown Bahasa */
+.lang-selector-login { margin-bottom: 20px; }
+.sidebar-lang { margin-top: 20px; padding: 0 10px; }
+.lang-dropdown { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); }
+.lang-dropdown option { color: black; }
+
+/* 4. Tabel Responsif (Biar bisa discroll ke samping di HP) */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* --- MEDIA QUERY: KHUSUS LAYAR HP (< 768px) --- */
+@media screen and (max-width: 768px) {
+    
+    /* Layout */
+    .app-layout { flex-direction: column; }
+    
+    /* Tombol Menu Muncul */
+    #mobile-menu-btn { display: block; }
+    
+    /* Sidebar: Sembunyi di kiri (-260px), Geser masuk saat kelas 'active' */
+    .sidebar {
+        position: fixed; top: 0; left: -260px; height: 100%; width: 250px;
+        z-index: 1000; transition: 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+    }
+    .sidebar.active { left: 0; }
+
+    /* Overlay Gelap saat Sidebar Muncul */
+    #sidebar-overlay {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 999;
+    }
+    #sidebar-overlay.active { display: block; }
+
+    /* Konten */
+    .content { padding: 70px 15px 20px 15px; /* Padding atas besar biar ga ketutup tombol menu */ }
+    
+    header { flex-direction: row; justify-content: flex-end; }
+    header h1 { display: none; /* Sembunyikan judul halaman di header HP biar bersih */ }
+
+    .login-card { width: 95%; padding: 20px; }
+    
+    /* Tabel Font Kecil di HP */
+    .islamic-table th, .islamic-table td { font-size: 0.85rem; padding: 8px; }
+}
