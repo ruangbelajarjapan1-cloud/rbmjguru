@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Akademik RBM Japan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RBM Japan System</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -13,93 +13,106 @@
         <div class="login-card">
             <div class="logo-area-login">
                 <img src="logo.png" alt="Logo RBM" class="login-logo">
-                <h2>Ahlan wa Sahlan</h2>
-                <p>Silakan pilih profil pengajar untuk masuk</p>
+                <h2 data-lang="login_welcome">Ahlan wa Sahlan</h2>
+                <p data-lang="login_desc">Silakan pilih profil pengajar</p>
             </div>
             
-            <div class="form-group">
-                <select id="login-guru-select" class="input-gold">
-                    <option value="">-- Sedang Memuat Data Guru... --</option>
+            <div class="lang-selector-login">
+                <select id="lang-select-login" onchange="changeLanguage(this.value)">
+                    <option value="id">🇮🇩 Indonesia</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="jp">🇯🇵 日本語</option>
                 </select>
             </div>
 
-            <button onclick="handleLogin()" class="btn-gold" style="width:100%">Masuk Aplikasi</button>
+            <div class="form-group">
+                <select id="login-guru-select" class="input-gold">
+                    <option value="" data-lang="loading">Memuat...</option>
+                </select>
+            </div>
+
+            <button onclick="handleLogin()" class="btn-gold" style="width:100%" data-lang="btn_enter">Masuk Aplikasi</button>
         </div>
     </section>
 
     <div id="app-container" class="app-layout hidden">
         
-        <nav class="sidebar">
+        <button id="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+        <nav class="sidebar" id="sidebar">
             <div class="logo-area">
                 <img src="logo.png" alt="Logo RBM" class="logo-img">
-                <p>Sistem Akademik</p>
+                <p>Academic System</p>
             </div>
             <ul class="menu">
-                <li onclick="showPage('dashboard')" class="active">🏠 Dashboard</li>
-                <li onclick="showPage('rpp')">📚 RPP</li>
-                <li onclick="showPage('silabus')">📜 Silabus</li>
-                <li onclick="showPage('penilaian')">✍️ Input Nilai</li>
-                <li onclick="showPage('rapor')">📊 Rapor Siswa</li>
+                <li onclick="showPage('dashboard')" class="active" data-lang="menu_dashboard">🏠 Dashboard</li>
+                <li onclick="showPage('rpp')" data-lang="menu_rpp">📚 RPP</li>
+                <li onclick="showPage('silabus')" data-lang="menu_silabus">📜 Silabus</li>
+                <li onclick="showPage('penilaian')" data-lang="menu_nilai">✍️ Input Nilai</li>
+                <li onclick="showPage('rapor')" data-lang="menu_rapor">📊 Rapor Siswa</li>
             </ul>
+            
+            <div class="sidebar-lang">
+                <select id="lang-select-sidebar" onchange="changeLanguage(this.value)" class="lang-dropdown">
+                    <option value="id">🇮🇩 ID</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="jp">🇯🇵 JP</option>
+                </select>
+            </div>
+
             <div class="footer-nav">
-                <button onclick="handleLogout()" class="btn-logout">Keluar / Ganti Guru</button>
+                <button onclick="handleLogout()" class="btn-logout" data-lang="btn_logout">Keluar</button>
             </div>
         </nav>
 
+        <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
         <main class="content">
             <header>
-                <h1 id="page-title">Dashboard</h1>
+                <h1 id="page-title">DASHBOARD</h1>
                 <div class="user-profile">
-                    <span id="header-nama-guru">Tamu</span>
-                    <div class="avatar" id="header-avatar">T</div>
+                    <span id="header-nama-guru">Guest</span>
+                    <div class="avatar" id="header-avatar">G</div>
                 </div>
             </header>
 
-            <div id="loader" class="loader hidden">Mengambil Data...</div>
+            <div id="loader" class="loader hidden" data-lang="loading">Mengambil Data...</div>
 
             <section id="dashboard" class="page-section">
                 <div class="welcome-card">
-                    <h3>Assalamu'alaikum, <span id="welcome-nama-guru">Ustadz/ah</span>.</h3>
-                    <p>Selamat bertugas mendidik generasi Rabbani.</p>
-                </div>
-                <div class="stats-grid">
-                    <div class="card stat">
-                        <h4>Status Sistem</h4>
-                        <span class="number" style="font-size:1rem; color:green;">Online</span>
-                    </div>
+                    <h3><span data-lang="greeting">Assalamu'alaikum</span>, <span id="welcome-nama-guru">Ustadz/ah</span>.</h3>
+                    <p data-lang="dashboard_msg">Selamat bertugas mendidik generasi Rabbani.</p>
                 </div>
             </section>
 
             <section id="rpp" class="page-section hidden">
                 <div class="card">
                     <div class="header-with-filter">
-                        <h3>Rencana Pembelajaran</h3>
-                        <select id="filter-rpp" onchange="filterData('rpp')" class="input-gold">
-                            <option value="all">Semua Mapel</option>
-                        </select>
+                        <h3 data-lang="menu_rpp">Rencana Pembelajaran</h3>
+                        <select id="filter-rpp" onchange="filterData('rpp')" class="input-gold"></select>
                     </div>
-                    <table class="islamic-table" id="table-rpp">
-                        <thead>
-                            <tr>
-                                <th>Mapel</th>
-                                <th>Pertemuan</th>
-                                <th>Materi</th>
-                                <th>Tujuan</th>
-                                <th>Kegiatan</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="islamic-table" id="table-rpp">
+                            <thead>
+                                <tr>
+                                    <th data-lang="col_mapel">Mapel</th>
+                                    <th data-lang="col_meet">Pertemuan</th>
+                                    <th data-lang="col_materi">Materi</th>
+                                    <th data-lang="col_tujuan">Tujuan</th>
+                                    <th data-lang="col_kegiatan">Kegiatan</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
             <section id="silabus" class="page-section hidden">
                 <div class="card">
                     <div class="header-with-filter">
-                        <h3>Silabus</h3>
-                        <select id="filter-silabus" onchange="filterData('silabus')" class="input-gold">
-                            <option value="all">Semua Mapel</option>
-                        </select>
+                        <h3 data-lang="menu_silabus">Silabus</h3>
+                        <select id="filter-silabus" onchange="filterData('silabus')" class="input-gold"></select>
                     </div>
                     <div id="silabus-container" class="grid-container"></div>
                 </div>
@@ -107,63 +120,58 @@
 
             <section id="penilaian" class="page-section hidden">
                 <div class="card form-card">
-                    <h3>Input Penilaian</h3>
+                    <h3 data-lang="title_input">Input Penilaian</h3>
                     <form id="form-nilai">
                         <div class="form-group">
-                            <label>Nama Siswa</label>
-                            <input type="text" id="input-nama" required placeholder="Nama santri">
-                        </div>
-                        <div class="form-group">
-                            <label>Mata Pelajaran</label>
-                            <select id="input-mapel">
-                                <option>Tajwid</option>
-                                <option>Fiqih</option>
-                                <option>Adab</option>
-                                <option>Bahasa Arab</option>
-                                <option>Sejarah Nabi</option>
+                            <label data-lang="label_siswa">Nama Siswa</label>
+                            <select id="input-nama" required class="input-gold">
+                                <option value="">-- Loading --</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Nilai (0-100)</label>
+                            <label data-lang="label_mapel">Mata Pelajaran</label>
+                            <select id="input-mapel" class="input-gold"></select>
+                        </div>
+                        <div class="form-group">
+                            <label data-lang="label_nilai">Nilai (0-100)</label>
                             <input type="number" id="input-nilai" required>
                         </div>
                         <div class="form-group">
-                            <label>Keterangan</label>
+                            <label data-lang="label_ket">Keterangan</label>
                             <input type="text" id="input-ket">
                         </div>
-                        <div class="form-group" style="display:none;">
-                            <label>Pengajar</label>
-                            <input type="text" id="input-guru-hidden" readonly>
-                        </div>
+                        
+                        <input type="text" id="input-guru-hidden" style="display:none" readonly>
                         
                         <div class="info-box">
-                            <small>Data akan disimpan atas nama: <b><span id="display-guru-form"></span></b></small>
+                            <small><span data-lang="info_guru">Data disimpan oleh:</span> <b><span id="display-guru-form"></span></b></small>
                         </div>
                         <br>
 
-                        <button type="submit" class="btn-gold">Simpan Nilai</button>
+                        <button type="submit" class="btn-gold" data-lang="btn_save">Simpan Nilai</button>
                     </form>
                 </div>
             </section>
 
             <section id="rapor" class="page-section hidden">
                 <div class="card">
-                    <h3>Rekap Data Nilai</h3>
-                    <table class="islamic-table" id="table-rapor">
-                        <thead>
-                            <tr>
-                                <th>Siswa</th>
-                                <th>Mapel</th>
-                                <th>Nilai</th>
-                                <th>Ket</th>
-                                <th>Pengajar</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <h3 data-lang="menu_rapor">Rekap Data Nilai</h3>
+                    <div class="table-responsive">
+                        <table class="islamic-table" id="table-rapor">
+                            <thead>
+                                <tr>
+                                    <th data-lang="label_siswa">Siswa</th>
+                                    <th data-lang="col_mapel">Mapel</th>
+                                    <th data-lang="label_nilai">Nilai</th>
+                                    <th data-lang="label_ket">Ket</th>
+                                    <th>WA</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
-
         </main>
     </div>
 
