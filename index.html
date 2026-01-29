@@ -9,148 +9,163 @@
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="logo-area">
-            <h2>RBM Japan</h2>
-            <p>Sistem Akademik</p>
-        </div>
-        <ul class="menu">
-            <li onclick="showPage('dashboard')" class="active">🏠 Dashboard</li>
-            <li onclick="showPage('rpp')">📚 RPP</li>
-            <li onclick="showPage('silabus')">📜 Silabus</li>
-            <li onclick="showPage('penilaian')">✍️ Input Nilai</li>
-            <li onclick="showPage('rapor')">📊 Rapor Siswa</li>
-        </ul>
-        <div class="footer-nav">
-            <small>© 2026 RBM Japan</small>
-        </div>
-    </nav>
-
-    <main class="content">
-        
-        <header>
-            <h1 id="page-title">Dashboard</h1>
-            <div class="user-profile">
-                <span>Ustadzah Yuni</span>
-                <div class="avatar">UY</div>
+    <section id="login-section" class="login-overlay">
+        <div class="login-card">
+            <div class="logo-area-login">
+                <img src="logo.png" alt="Logo RBM" class="login-logo">
+                <h2>Ahlan wa Sahlan</h2>
+                <p>Silakan pilih profil pengajar untuk masuk</p>
             </div>
-        </header>
-
-        <div id="loader" class="loader hidden">Mengambil Data...</div>
-
-        <section id="dashboard" class="page-section">
-            <div class="welcome-card">
-                <h3>Ahlan wa Sahlan, Ustadzah.</h3>
-                <p>Semoga hari ini penuh berkah untuk mengajar anak-anak RBM.</p>
-            </div>
-            <div class="stats-grid">
-                <div class="card stat">
-                    <h4>Total Siswa</h4>
-                    <span class="number">--</span>
-                </div>
-                <div class="card stat">
-                    <h4>Kelas Aktif</h4>
-                    <span class="number">--</span>
-                </div>
-            </div>
-        </section>
-
-       <section id="rpp" class="page-section hidden">
-            <div class="card">
-                <div class="header-with-filter">
-                    <h3>Rencana Pelaksanaan Pembelajaran</h3>
-                    <select id="filter-rpp" onchange="filterData('rpp')" class="input-gold">
-                        <option value="all">Semua Mapel</option>
-                        </select>
-                </div>
-                
-                <table class="islamic-table" id="table-rpp">
-                    <thead>
-                        <tr>
-                            <th>Mapel</th>
-                            <th>Pertemuan</th>
-                            <th>Materi</th>
-                            <th>Tujuan</th>
-                            <th>Kegiatan</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="silabus" class="page-section hidden">
-            <div class="card">
-                <div class="header-with-filter">
-                    <h3>Silabus Semester Ini</h3>
-                    <select id="filter-silabus" onchange="filterData('silabus')" class="input-gold">
-                        <option value="all">Semua Mapel</option>
-                    </select>
-                </div>
-                
-                <div id="silabus-container" class="grid-container">
-                    </div>
-            </div>
-        </section>
-        <section id="penilaian" class="page-section hidden">
-    <div class="card form-card">
-        <h3>Input Penilaian Siswa</h3>
-        <form id="form-nilai">
             
             <div class="form-group">
-                <label>Nama Siswa</label>
-                <input type="text" id="input-nama" placeholder="Contoh: Ahmad" required>
-            </div>
-
-            <div class="form-group">
-                <label>Mata Pelajaran</label>
-                <select id="input-mapel">
-                    <option>Tajwid</option>
-                    <option>Fiqih</option>
-                    <option>Adab</option>
-                    <option>Bahasa Arab</option>
+                <select id="login-guru-select" class="input-gold">
+                    <option value="">-- Sedang Memuat Data Guru... --</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label>Nilai (0-100)</label>
-                <input type="number" id="input-nilai" required>
-            </div>
+            <button onclick="handleLogin()" class="btn-gold" style="width:100%">Masuk Aplikasi</button>
+        </div>
+    </section>
 
-            <div class="form-group">
-                <label>Keterangan</label>
-                <input type="text" id="input-ket" placeholder="Catatan singkat">
+    <div id="app-container" class="app-layout hidden">
+        
+        <nav class="sidebar">
+            <div class="logo-area">
+                <img src="logo.png" alt="Logo RBM" class="logo-img">
+                <p>Sistem Akademik</p>
             </div>
+            <ul class="menu">
+                <li onclick="showPage('dashboard')" class="active">🏠 Dashboard</li>
+                <li onclick="showPage('rpp')">📚 RPP</li>
+                <li onclick="showPage('silabus')">📜 Silabus</li>
+                <li onclick="showPage('penilaian')">✍️ Input Nilai</li>
+                <li onclick="showPage('rapor')">📊 Rapor Siswa</li>
+            </ul>
+            <div class="footer-nav">
+                <button onclick="handleLogout()" class="btn-logout">Keluar / Ganti Guru</button>
+            </div>
+        </nav>
 
-            <div class="form-group">
-                <label>Nama Pengajar</label>
-                <select id="input-guru">
-                    <option value="">-- Sedang Memuat Guru... --</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-gold">Simpan Nilai</button>
-        </form>
+        <main class="content">
+            <header>
+                <h1 id="page-title">Dashboard</h1>
+                <div class="user-profile">
+                    <span id="header-nama-guru">Tamu</span>
+                    <div class="avatar" id="header-avatar">T</div>
+                </div>
+            </header>
+
+            <div id="loader" class="loader hidden">Mengambil Data...</div>
+
+            <section id="dashboard" class="page-section">
+                <div class="welcome-card">
+                    <h3>Assalamu'alaikum, <span id="welcome-nama-guru">Ustadz/ah</span>.</h3>
+                    <p>Selamat bertugas mendidik generasi Rabbani.</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="card stat">
+                        <h4>Status Sistem</h4>
+                        <span class="number" style="font-size:1rem; color:green;">Online</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="rpp" class="page-section hidden">
+                <div class="card">
+                    <div class="header-with-filter">
+                        <h3>Rencana Pembelajaran</h3>
+                        <select id="filter-rpp" onchange="filterData('rpp')" class="input-gold">
+                            <option value="all">Semua Mapel</option>
+                        </select>
+                    </div>
+                    <table class="islamic-table" id="table-rpp">
+                        <thead>
+                            <tr>
+                                <th>Mapel</th>
+                                <th>Pertemuan</th>
+                                <th>Materi</th>
+                                <th>Tujuan</th>
+                                <th>Kegiatan</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="silabus" class="page-section hidden">
+                <div class="card">
+                    <div class="header-with-filter">
+                        <h3>Silabus</h3>
+                        <select id="filter-silabus" onchange="filterData('silabus')" class="input-gold">
+                            <option value="all">Semua Mapel</option>
+                        </select>
+                    </div>
+                    <div id="silabus-container" class="grid-container"></div>
+                </div>
+            </section>
+
+            <section id="penilaian" class="page-section hidden">
+                <div class="card form-card">
+                    <h3>Input Penilaian</h3>
+                    <form id="form-nilai">
+                        <div class="form-group">
+                            <label>Nama Siswa</label>
+                            <input type="text" id="input-nama" required placeholder="Nama santri">
+                        </div>
+                        <div class="form-group">
+                            <label>Mata Pelajaran</label>
+                            <select id="input-mapel">
+                                <option>Tajwid</option>
+                                <option>Fiqih</option>
+                                <option>Adab</option>
+                                <option>Bahasa Arab</option>
+                                <option>Sejarah Nabi</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nilai (0-100)</label>
+                            <input type="number" id="input-nilai" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Keterangan</label>
+                            <input type="text" id="input-ket">
+                        </div>
+                        <div class="form-group" style="display:none;">
+                            <label>Pengajar</label>
+                            <input type="text" id="input-guru-hidden" readonly>
+                        </div>
+                        
+                        <div class="info-box">
+                            <small>Data akan disimpan atas nama: <b><span id="display-guru-form"></span></b></small>
+                        </div>
+                        <br>
+
+                        <button type="submit" class="btn-gold">Simpan Nilai</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="rapor" class="page-section hidden">
+                <div class="card">
+                    <h3>Rekap Data Nilai</h3>
+                    <table class="islamic-table" id="table-rapor">
+                        <thead>
+                            <tr>
+                                <th>Siswa</th>
+                                <th>Mapel</th>
+                                <th>Nilai</th>
+                                <th>Ket</th>
+                                <th>Pengajar</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
     </div>
-</section>
-        <section id="rapor" class="page-section hidden">
-            <div class="card">
-                <h3>Rekap Nilai Masuk</h3>
-                <button onclick="loadRapor()" class="btn-refresh">🔄 Refresh Data</button>
-                <table class="islamic-table" id="table-rapor">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Mapel</th>
-                            <th>Nilai</th>
-                            <th>Ket</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
 
     <script src="script.js"></script>
 </body>
