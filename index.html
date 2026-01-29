@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RBM Japan System</title>
+    <title>Sistem RBM Japan</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <link rel="stylesheet" href="style.css">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#2F5D62"> 
-
-
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2F5D62">
 </head>
 <body>
 
     <section id="login-section" class="login-overlay">
         <div class="login-card">
             <div class="logo-area-login">
-                <img src="logo.png" alt="Logo RBM" class="login-logo">
+                <img src="logo.png" alt="RBM Logo" class="login-logo" onerror="this.style.display='none'">
                 <h2 data-lang="login_welcome">Ahlan wa Sahlan</h2>
                 <p data-lang="login_desc">Silakan pilih profil pengajar</p>
             </div>
@@ -31,18 +33,17 @@
                 </select>
             </div>
 
-           <div class="form-group">
-    <select id="login-guru-select" class="input-gold">
-        <option value="" data-lang="loading">Memuat...</option>
-    </select>
-</div>
+            <div class="form-group">
+                <select id="login-guru-select" class="input-gold">
+                    <option value="" data-lang="loading">Memuat Data Guru...</option>
+                </select>
+            </div>
 
-<div class="form-group">
-    <input type="password" id="login-pin" class="input-gold" placeholder="Masukkan PIN Rahasia" maxlength="6" style="text-align:center; letter-spacing: 5px; font-size: 1.2rem;">
-</div>
-<button onclick="handleLogin()" class="btn-gold" style="width:100%" data-lang="btn_enter">Masuk Aplikasi</button>
+            <div class="form-group">
+                <input type="password" id="login-pin" class="input-gold" placeholder="PIN (Lihat di Sheet)" maxlength="6" style="text-align:center; letter-spacing: 5px; font-size: 1.2rem;">
+            </div>
 
-           
+            <button onclick="handleLogin()" class="btn-gold" style="width:100%" data-lang="btn_enter">Masuk Aplikasi</button>
         </div>
     </section>
 
@@ -52,7 +53,7 @@
 
         <nav class="sidebar" id="sidebar">
             <div class="logo-area">
-                <img src="logo.png" alt="Logo RBM" class="logo-img">
+                <img src="logo.png" alt="RBM" class="logo-img" onerror="this.style.display='none'">
                 <p>Academic System</p>
             </div>
             <ul class="menu">
@@ -87,12 +88,48 @@
                 </div>
             </header>
 
-            <div id="loader" class="loader hidden" data-lang="loading">Mengambil Data...</div>
+            <div id="loader" class="loader hidden" data-lang="loading">Memproses Data...</div>
 
             <section id="dashboard" class="page-section">
                 <div class="welcome-card">
-                    <h3><span data-lang="greeting">Assalamu'alaikum</span>, <span id="welcome-nama-guru">Ustadz/ah</span>.</h3>
-                    <p data-lang="dashboard_msg">Selamat bertugas mendidik generasi Rabbani.</p>
+                    <div class="welcome-text">
+                        <h3><span data-lang="greeting">Assalamu'alaikum</span>, <span id="welcome-nama-guru">Ustadz</span>.</h3>
+                        <p id="hijri-date" style="color:var(--gold-accent); font-weight:bold; font-size:0.9rem; margin-top:5px;">Loading Date...</p>
+                    </div>
+                    <div style="font-size:2.5rem;">🕌</div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card widget-card sunnah-card">
+                        <div class="sunnah-header">
+                            <div class="sunnah-icon" id="sunnah-icon">☀️</div>
+                            <div class="sunnah-text">
+                                <h4>Amalan Harian</h4>
+                                <p id="sunnah-msg">Memuat pengingat...</p>
+                            </div>
+                        </div>
+                        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+                        <div class="mini-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Siswa</span>
+                                <span class="stat-value" id="stat-siswa">--</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total Guru</span>
+                                <span class="stat-value" id="stat-guru">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card widget-card">
+                        <h4>📝 Catatan / To-Do</h4>
+                        <div class="todo-input-area">
+                            <input type="text" id="todo-input" placeholder="Tulis tugas..." onkeypress="handleTodoKey(event)">
+                            <button onclick="addTodo()" class="btn-gold" style="padding:5px 10px; width:auto;">+</button>
+                        </div>
+                        <ul id="todo-list" class="todo-list">
+                            </ul>
+                    </div>
                 </div>
             </section>
 
@@ -125,13 +162,14 @@
                         <h3 data-lang="menu_silabus">Silabus</h3>
                         <select id="filter-silabus" onchange="filterData('silabus')" class="input-gold"></select>
                     </div>
-                    <div id="silabus-container" class="grid-container"></div>
+                    <div id="silabus-container" class="grid-container">
+                        </div>
                 </div>
             </section>
 
             <section id="penilaian" class="page-section hidden">
                 <div class="card form-card">
-                    <h3 data-lang="title_input">Input Penilaian</h3>
+                    <h3 data-lang="title_input">Input Nilai</h3>
                     <form id="form-nilai">
                         <div class="form-group">
                             <label data-lang="label_siswa">Nama Siswa</label>
@@ -141,7 +179,8 @@
                         </div>
                         <div class="form-group">
                             <label data-lang="label_mapel">Mata Pelajaran</label>
-                            <select id="input-mapel" class="input-gold"></select>
+                            <select id="input-mapel" class="input-gold">
+                                </select>
                         </div>
                         <div class="form-group">
                             <label data-lang="label_nilai">Nilai (0-100)</label>
@@ -152,13 +191,12 @@
                             <input type="text" id="input-ket">
                         </div>
                         
-                        <input type="text" id="input-guru-hidden" style="display:none" readonly>
+                        <input type="hidden" id="input-guru-hidden">
                         
                         <div class="info-box">
-                            <small><span data-lang="info_guru">Data disimpan oleh:</span> <b><span id="display-guru-form"></span></b></small>
+                            <small><span data-lang="info_guru">Penginput:</span> <b><span id="display-guru-form"></span></b></small>
                         </div>
                         <br>
-
                         <button type="submit" class="btn-gold" data-lang="btn_save">Simpan Nilai</button>
                     </form>
                 </div>
@@ -166,13 +204,10 @@
 
             <section id="rapor" class="page-section hidden">
                 <div class="header-with-filter">
-    <h3 data-lang="menu_rapor">Rekap Data Nilai</h3>
-    <button onclick="window.print()" class="btn-gold" style="width:auto; padding:5px 15px;">
-        🖨️ Print / PDF
-    </button>
-</div>
+                    <h3 data-lang="menu_rapor">Rekap Nilai</h3>
+                    <button onclick="window.print()" class="btn-gold" style="width:auto; padding:5px 15px;">🖨️ PDF</button>
+                </div>
                 <div class="card">
-                    <h3 data-lang="menu_rapor">Rekap Data Nilai</h3>
                     <div class="table-responsive">
                         <table class="islamic-table" id="table-rapor">
                             <thead>
