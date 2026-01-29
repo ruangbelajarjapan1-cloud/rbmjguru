@@ -93,35 +93,45 @@
             </div>
         </section>
         <section id="penilaian" class="page-section hidden">
-            <div class="card form-card">
-                <h3>Input Penilaian Siswa</h3>
-                <form id="form-nilai">
-                    <div class="form-group">
-                        <label>Nama Siswa</label>
-                        <input type="text" id="input-nama" placeholder="Contoh: Ahmad" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Mata Pelajaran</label>
-                        <select id="input-mapel">
-                            <option>Tajwid</option>
-                            <option>Fiqih</option>
-                            <option>Adab</option>
-                            <option>Bahasa Arab</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Nilai (0-100)</label>
-                        <input type="number" id="input-nilai" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Keterangan</label>
-                        <input type="text" id="input-ket" placeholder="Catatan singkat">
-                    </div>
-                    <button type="submit" class="btn-gold">Simpan Nilai</button>
-                </form>
+    <div class="card form-card">
+        <h3>Input Penilaian Siswa</h3>
+        <form id="form-nilai">
+            
+            <div class="form-group">
+                <label>Nama Siswa</label>
+                <input type="text" id="input-nama" placeholder="Contoh: Ahmad" required>
             </div>
-        </section>
 
+            <div class="form-group">
+                <label>Mata Pelajaran</label>
+                <select id="input-mapel">
+                    <option>Tajwid</option>
+                    <option>Fiqih</option>
+                    <option>Adab</option>
+                    <option>Bahasa Arab</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Nilai (0-100)</label>
+                <input type="number" id="input-nilai" required>
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan</label>
+                <input type="text" id="input-ket" placeholder="Catatan singkat">
+            </div>
+
+            <div class="form-group">
+                <label>Nama Pengajar</label>
+                <select id="input-guru">
+                    <option value="">-- Sedang Memuat Guru... --</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-gold">Simpan Nilai</button>
+        </form>
+    </div>
+</section>
         <section id="rapor" class="page-section hidden">
             <div class="card">
                 <h3>Rekap Nilai Masuk</h3>
